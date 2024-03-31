@@ -1,0 +1,19 @@
+{
+  "name": "canderdb",
+  "version": "1.0.0",
+  "description": "NoSQL DBMS",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ClintTheEngineer/canderDB.git"
+  },
+  "author": "Clint Alexander",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/ClintTheEngineer/canderDB/issues"
+  },
+  "homepage": "https://github.com/ClintTheEngineer/canderDB#readme"
+}
