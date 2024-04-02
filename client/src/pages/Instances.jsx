@@ -1,5 +1,6 @@
 import { CreateInstanceButton } from "../components/CreateInstanceButton";
 import { useState } from 'react';
+import LogoutButton from "../components/SignoutButton";
 
 export const Instances = () => {
   // State to manage the list of instances
@@ -123,6 +124,7 @@ export const Instances = () => {
           <button onClick={() => setShowDeleteDialog(false)}>No</button>
         </div>
       )}
+      <LogoutButton />
     </>
   );
 };

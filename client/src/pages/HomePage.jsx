@@ -1,12 +1,11 @@
 import { LoginButton } from "../components/LoginButton";
-import { Link } from 'react-router-dom';
+import { SignupButton } from "../components/SignupButton";
 
 export const HomePage = () => {
   return (
     <>
-    <Link to='/instances'>
     <LoginButton />
-    </Link>
+    <SignupButton />
     </>
   )
 }
