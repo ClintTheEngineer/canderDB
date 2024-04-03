@@ -1,5 +1,5 @@
 import { CreateInstanceButton } from "../components/CreateInstanceButton";
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import LogoutButton from "../components/SignoutButton";
 
 export const Instances = () => {
@@ -20,28 +20,67 @@ export const Instances = () => {
   // State to store the value entered in the delete confirmation input field
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
+  const userEmail = localStorage.getItem('email');
+  console.log(userEmail)
+
+  // Function to fetch instance list from server
+  const fetchInstances = useCallback(() => {
+    fetch(`http://localhost:3333/instances/${userEmail}`)
+      .then(response => response.json())
+      .then(data => setInstances(data))
+      .catch(error => console.error('Error fetching instances:', error));
+  }, [userEmail, setInstances]);
+
+  useEffect(() => {
+    fetchInstances();
+  }, [fetchInstances]); // Empty dependency array ensures the effect runs only once after initial render
+
   // Function to handle adding a new instance
   const addInstance = () => {
     if (instanceName.trim() !== '') {
-      setInstances([...instances, instanceName]);
-      setInstanceName('');
-      setShowInput(false);
+      fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: instanceName }),
+      })
+      .then(response => {
+        return response;
+      })
+      .then(data => {
+        setInstances([...instances, data]);
+        setInstanceName('');
+        setShowInput(false);
+      })
+      .catch(error => console.error('Error creating instance:', error));
     }
   };
-
+  
   // Function to handle editing an instance name
   const editInstance = (index) => {
     setEditingIndex(index);
-    setEditedInstanceName(instances[index]);
+    setEditedInstanceName(instances[index].name);
   };
 
   // Function to handle saving the edited instance name
   const saveEditedInstance = (index) => {
     if (editedInstanceName.trim() !== '') {
-      const updatedInstances = [...instances];
-      updatedInstances[index] = editedInstanceName;
-      setInstances(updatedInstances);
-      setEditingIndex(null);
+      fetch(`http://localhost:3333/instances/${userEmail}/${instances[index].name}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ newName: editedInstanceName }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        const updatedInstances = [...instances];
+        updatedInstances[index].name = data.name;
+        setInstances(updatedInstances);
+        setEditingIndex(null);
+      })
+      .catch(error => console.error('Error updating instance:', error));
     }
   };
 
@@ -56,15 +95,20 @@ export const Instances = () => {
     const confirmedName = deleteConfirmation.trim();
     const instanceToDelete = instances[deletingIndex];
 
-    if (confirmedName === instanceToDelete) {
-      const updatedInstances = [...instances];
-      updatedInstances.splice(deletingIndex, 1);
-      setInstances(updatedInstances);
+    if (confirmedName === instanceToDelete.name) {
+      fetch(`http://localhost:3333/instances/${userEmail}/${instanceToDelete.name}`, {
+        method: 'DELETE',
+      })
+      .then(() => {
+        const updatedInstances = [...instances];
+        updatedInstances.splice(deletingIndex, 1);
+        setInstances(updatedInstances);
+        setShowDeleteDialog(false);
+        setDeletingIndex(null);
+        setDeleteConfirmation('');
+      })
+      .catch(error => console.error('Error deleting instance:', error));
     }
-
-    setShowDeleteDialog(false);
-    setDeletingIndex(null);
-    setDeleteConfirmation('');
   };
 
   return (
@@ -88,7 +132,7 @@ export const Instances = () => {
                 </>
               ) : (
                 <>
-                  <span>{instance}</span>
+                  <span>{instance.name}</span>
                   <button onClick={() => editInstance(index)}>Edit</button>
                 </>
               )}

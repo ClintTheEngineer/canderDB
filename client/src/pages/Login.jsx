@@ -80,6 +80,6 @@ export const Login = () => {
   }
 
   Login.propTypes = {
-    setToken: PropTypes.func.isRequired
+    setToken: PropTypes.string.isRequired
   }
   
