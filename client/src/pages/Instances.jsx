@@ -132,7 +132,8 @@ export const Instances = () => {
                 </>
               ) : (
                 <>
-                  <span>{instance.name}</span>
+                  <a href={`/${instance.name}`}><span>{instance.name}</span></a>
+
                   <button onClick={() => editInstance(index)}>Edit</button>
                 </>
               )}

@@ -6,6 +6,8 @@ import { Instances } from './pages/Instances';
 import { Register } from './pages/Register';
 import { Login } from './pages/Login';
 import { PrivateRoutes } from './pages/PrivateRoutes';
+//import { InstanceNames } from './pages/InstanceNames';
+import { TestPage } from './pages/TestPage'
 
 function App() {
   const [setToken] = useState('');
@@ -17,7 +19,11 @@ function App() {
      <Route path='/register' element={<Register />} />
      <Route path='/login' element={<Login setToken={setToken}/>} />
      <Route element={<PrivateRoutes />}>
+
      <Route path='/instances' element={<Instances />} />
+    {/*  <Route path=':pathParam' element={<InstanceNames />}  />  */}
+     <Route path=':pathParam' element={<TestPage />}  />
+
      </Route>
      </Routes>
     </Router>
