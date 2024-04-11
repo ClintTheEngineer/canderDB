@@ -1,0 +1,131 @@
+PUT request:
+
+http://localhost:3333/instances/mmaaced@gmail.com/people/school.db
+
+*****************************************
+
+{
+  "schema": [
+    {
+      "name": "subject",
+      "type": "string"
+    },
+    {
+      "name": "grade", 
+      "type": "string"
+    }
+  ], 
+  "keys": [
+  {
+      "oldKey": "grade",
+      "newKey": "letter_grade"
+  }
+  ]
+}
+
+*****************************************
+
+UPDATE VALUES:
+
+{
+  "key": "subject",
+  "value": "math",
+  "fields": {
+    "letter_grade": "A"
+  }
+}
+
+{
+  "key": "subject",
+  "value": "maths",
+  "fields": {
+    "subject": "math"
+  }
+}
+
+UPDATE KEYS:
+
+{
+  "schema": [
+    {
+      "name": "subject",
+      "type": "string"
+    },
+    {
+      "name": "letter_grade", 
+      "type": "string"
+    }
+  ]
+}
+
+OR
+
+{
+    "key": "subject",
+    "value": "math",
+    "fields": {
+        "subject": "mathematics"
+    }
+}
+
+
+school.db
+
+{
+  "name": "school",
+  "keys": [
+    {
+      "name": "subject",
+      "type": "string"
+    },
+    {
+      "name": "letter_grade",
+      "type": "string"
+    }
+  ],
+  "entries": [
+    {
+      "subject": "math",
+      "letter_grade": "A"
+    }
+  ]
+}
+
+**************************************************************************************************************
+POST
+
+http://localhost:3333/instances/mmaaced@gmail.com/people/school.db
+
+{
+      "subject": "chemistry",
+      "letter_grade": "C-"
+}
+
+------
+
+{
+  "name": "ice-cream",
+  "keys": [
+    {
+      "name": "flavor",
+      "type": "string"
+    },
+    {
+      "name": "delicious",
+      "type": "boolean"
+    }
+  ], 
+  "entries": []
+}
+
+
+
+
+**********************************************************************
+
+PATCH
+
+{
+    "oldKey": "letter_grades",
+    "newKey": "letter_grade"
+}

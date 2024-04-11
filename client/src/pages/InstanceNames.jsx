@@ -2,125 +2,143 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams  } from 'react-router-dom';
 
 export const InstanceNames = () => {
-  const [tables, setTables] = useState([]);
-  const [newTableName, setNewTableName] = useState('');
-  const [newTableArgs, setNewTableArgs] = useState('');
-  const [selectedTable, setSelectedTable] = useState(null);
-  const [newEntryData, setNewEntryData] = useState({});
+  const [tableName, setTableName] = useState('');
+  const [numArguments, setNumArguments] = useState(0);
+  const [argumentNames, setArgumentNames] = useState([]);
+  const [argumentTypes, setArgumentTypes] = useState([]);
+  const [selectedInstance, setSelectedInstance] = useState('');
+  const [fileList, setFileList] = useState([]);
+  const [tableContents, setTableContents] = useState(null);
   const { pathParam } = useParams();
   const userEmail = localStorage.getItem('email');
   const instanceName = pathParam;
-  console.log(instanceName, userEmail)
-  
 
-  const fetchTables = useCallback(() => {
+  
+  const fetchFileList = useCallback(async () => {
     try {
-      const response = fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}`);
-      setTables(response.data.tables);
+      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}`);
+      if (response.ok) {
+        const data = await response.json();
+        setFileList(data.files);
+      } else {
+        console.error('Failed to fetch file list');
+      }
     } catch (error) {
-      console.error('Error fetching tables:', error);
+      console.error('Error fetching file list:', error);
     }
-  },[instanceName, userEmail]);
+  }, [instanceName, userEmail]);
 
   useEffect(() => {
-    fetchTables();
-  }, [fetchTables]);
+    // Fetch list of files from server
+    fetchFileList();
+  }, [fetchFileList]);
 
-  const handleCreateTable = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = {
+      name: tableName,
+      keys: argumentNames.map((name, index) => ({ name, type: argumentTypes[index] })),
+      entries: []
+    };
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${newTableName}`, {
+      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${tableName}.db`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          args: newTableArgs.split(',').map(arg => arg.trim()),
-        })
+        body: JSON.stringify(formData)
       });
-  
-      if (!response.ok) {
-        throw new Error('Failed to create table');
+      if (response.ok) {
+        console.log('Table created successfully');
+        // Clear form inputs after successful submission
+        setTableName('');
+        setNumArguments(0);
+        setArgumentNames([]);
+        setArgumentTypes([]);
+        // Update file list
+        fetchFileList();
+      } else {
+        console.error('Failed to create table');
       }
-  
-      const data = await response.json();
-      setTables([...tables, data.table]);
     } catch (error) {
       console.error('Error creating table:', error);
     }
   };
-  
 
-  const handleDeleteTable = async (tableName) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete the table "${tableName}"?`);
-    if (confirmDelete) {
-      try {
-        await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${tableName}`, {
-          method: 'DELETE'
-        });
-        setTables(tables.filter(table => table.name !== tableName));
-      } catch (error) {
-        console.error('Error deleting table:', error);
+  const handleInstanceSelect = async (instance) => {
+    setSelectedInstance(instance);
+    try {
+      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${instance}`);
+      if (response.ok) {
+        const data = await response.json();
+        setTableContents(data);
+      } else {
+        console.error(`Failed to fetch table contents for ${instance}`);
       }
-    }
-  };
-  
-  const handleAddEntry = async () => {
-    try {
-      await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedTable}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newEntryData)
-      });
-      // Refresh the table after adding entry
-      fetchTables();
     } catch (error) {
-      console.error('Error adding entry:', error);
+      console.error(`Error fetching table contents for ${instance}:`, error);
     }
   };
-  handleAddEntry()
-  const handleUpdateEntry = async (entryId, newData) => {
-    try {
-      await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedTable}/${entryId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newData)
-      });
-      // Refresh the table after updating entry
-      fetchTables();
-    } catch (error) {
-      console.error('Error updating entry:', error);
-    }
-  };
-  handleUpdateEntry()
+
   return (
     <div>
-      <h2>Instance: {instanceName}</h2>
-      <div>
-        <h3>Create New Table</h3>
-        <input type="text" placeholder="Table Name" value={newTableName} onChange={(e) => setNewTableName(e.target.value)} />
-        <input type="text" placeholder="Table Arguments (comma separated)" value={newTableArgs} onChange={(e) => setNewTableArgs(e.target.value)} />
-        <button onClick={handleCreateTable}>Create Table</button>
-      </div>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Table Name:
+          <input type="text" value={tableName} onChange={(e) => setTableName(e.target.value)} required />
+        </label>
+        <label>
+          Number of Arguments:
+          <input type="number" value={numArguments} onChange={(e) => setNumArguments(parseInt(e.target.value))} min={0} />
+        </label>
+        {Array.from({ length: numArguments }, (_, index) => (
+          <div key={index}>
+            <label>
+              Argument Name {index + 1}:
+              <input type="text" value={argumentNames[index] || ''} onChange={(e) => {
+                const newArgumentNames = [...argumentNames];
+                newArgumentNames[index] = e.target.value;
+                setArgumentNames(newArgumentNames);
+              }} required />
+            </label>
+            <label>
+              Argument Type:
+              <select value={argumentTypes[index] || ''} onChange={(e) => {
+                const newArgumentTypes = [...argumentTypes];
+                newArgumentTypes[index] = e.target.value;
+                setArgumentTypes(newArgumentTypes);
+              }} required>
+                <option value="">Select Type</option>
+                <option value="string">String</option>
+                <option value="number">Number</option>
+                <option value="boolean">Boolean</option>
+              </select>
+            </label>
+          </div>
+        ))}
+        <button type="submit">Create Table</button>
+      </form>
 
       <div>
-        <h3>Tables</h3>
-        <ul>
-          {tables.map(table => (
-            <li key={table.name}>
-              {table.name}
-              <button onClick={() => handleDeleteTable(table.name)}>Delete</button>
-            </li>
+        <h3>Instance Selector</h3>
+        <select value={selectedInstance} onChange={(e) => handleInstanceSelect(e.target.value)}>
+          <option value="">Select Instance</option>
+          {fileList.map(file => (
+            <option key={file} value={file}>{file}</option>
           ))}
-        </ul>
+        </select>
       </div>
 
-      {/* Additional UI for adding entry and updating entry */}
-      {/* You need to implement this part based on your requirements */}
+      {tableContents && (
+        <div>
+          <h3>Table Contents for {selectedInstance}</h3>
+          <pre>{JSON.stringify(tableContents, null, 2)}</pre>
+        </div>
+      )}
+
+      {/* Additional functionality for editing entries can be added here */}
     </div>
   );
 };
+
 

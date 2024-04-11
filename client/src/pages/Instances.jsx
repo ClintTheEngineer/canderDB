@@ -21,6 +21,8 @@ export const Instances = () => {
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
   const userEmail = localStorage.getItem('email');
+  const token = localStorage.getItem('token');
+  console.log(token)
   console.log(userEmail)
 
   // Function to fetch instance list from server
