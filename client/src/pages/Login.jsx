@@ -8,9 +8,14 @@ import PropTypes from 'prop-types';
 export const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('')
+    const [errorMessage, setErrorMessage] = useState('');
+    const [token, setToken] = useState('');
     const navigate = useNavigate();
     const appName = 'CanderDB';
+
+    Login.propTypes = {
+      setToken: PropTypes.func.isRequired,
+    };
   
     useEffect(() => {
       const token = localStorage.getItem('token')
@@ -21,9 +26,11 @@ export const Login = () => {
   
     const HandleLogin = async () => {
       try {
+        const authHeader = `Bearer ${token}`;
         const response = await fetch('http://localhost:3333/login', {
           method: 'POST',
           headers: {
+            'Authorization': authHeader,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({ email, password })
@@ -32,6 +39,8 @@ export const Login = () => {
         const data = await response.json();
         if (response.status === 200) {
           const token = data.token;
+          setToken(token);
+          setEmail(email);
           localStorage.setItem('token', token);
           localStorage.setItem('email', email);
           navigate('/instances');

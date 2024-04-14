@@ -27,10 +27,23 @@ export const Instances = () => {
 
   // Function to fetch instance list from server
   const fetchInstances = useCallback(() => {
-    fetch(`http://localhost:3333/instances/${userEmail}`)
-      .then(response => response.json())
-      .then(data => setInstances(data))
-      .catch(error => console.error('Error fetching instances:', error));
+    const token = localStorage.getItem('token'); // Assuming the token is stored in local storage
+    
+    // Check if token is present
+    if (token) {
+      fetch(`http://localhost:3333/instances/${userEmail}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`, // Include the token in the authorization header
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => setInstances(data))
+        .catch(error => console.error('Error fetching instances:', error));
+    } else {
+      console.error('Token not found. Unable to fetch instances.');
+    }
   }, [userEmail, setInstances]);
 
   useEffect(() => {
