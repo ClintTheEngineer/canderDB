@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams  } from 'react-router-dom';
+//import { useParams  } from 'react-router-dom';
 
 export const TestPage = () => {
   const [objectName, setObjectName] = useState('');
@@ -11,8 +11,8 @@ export const TestPage = () => {
   const [selectedObjectIndex, setSelectedObjectIndex] = useState(-1);
   const [selectedObjectData, setSelectedObjectData] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const { pathParam } = useParams();
-  const instanceName = pathParam;
+  //const { pathParam } = useParams();
+  const instanceName = 'people';
   const userEmail = localStorage.getItem('email');
 
   

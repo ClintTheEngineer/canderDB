@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams  } from 'react-router-dom';
+import { InstancesButton } from '../components/InstancesButton';
 
 export const InstanceNames = () => {
   const [tableName, setTableName] = useState('');
@@ -70,7 +71,7 @@ export const InstanceNames = () => {
     try {
       const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${instance}`);
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json();        
         setTableContents(data);
       } else {
         console.error(`Failed to fetch table contents for ${instance}`);
@@ -80,8 +81,12 @@ export const InstanceNames = () => {
     }
   };
 
+   
+
   return (
-    <div>
+    
+    <>
+    <InstancesButton />
       <form onSubmit={handleSubmit}>
         <label>
           Table Name:
@@ -122,7 +127,7 @@ export const InstanceNames = () => {
       <div>
         <h3>Instance Selector</h3>
         <select value={selectedInstance} onChange={(e) => handleInstanceSelect(e.target.value)}>
-          <option value="">Select Instance</option>
+          <option value="default">Select Instance</option>
           {fileList.map(file => (
             <option key={file} value={file}>{file}</option>
           ))}
@@ -132,12 +137,36 @@ export const InstanceNames = () => {
       {tableContents && (
         <div>
           <h3>Table Contents for {selectedInstance}</h3>
-          <pre>{JSON.stringify(tableContents, null, 2)}</pre>
+          {tableContents && (
+        <div className="fetched-data-table">
+          <h2>Data for selected table:</h2>
+          <table>
+            <thead>
+              <tr>
+                {/* Render table headers */}
+{tableContents.length > 0 && Object.keys(tableContents[0]).map(key => (
+  <th key={key}>{key}</th>
+))}
+         </tr>
+          </thead>
+            <tbody>
+              {/* Render table rows */}
+              {tableContents.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {Object.values(row).map((value, colIndex) => (
+                    <td key={colIndex}>{value.toString()}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
+        </div>
+    )}
 
-      {/* Additional functionality for editing entries can be added here */}
-    </div>
+      
+    </>    
   );
 };
 
