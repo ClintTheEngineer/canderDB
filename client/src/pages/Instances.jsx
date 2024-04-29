@@ -1,6 +1,7 @@
 import { CreateInstanceButton } from "../components/CreateInstanceButton";
 import { useState, useEffect, useCallback } from 'react';
 import LogoutButton from "../components/SignoutButton";
+import { Constants } from "./Constants";
 
 export const Instances = () => {
   // State to manage the list of instances
@@ -29,7 +30,7 @@ export const Instances = () => {
     
     // Check if token is present
     if (token) {
-      fetch(`http://localhost:3333/instances/${userEmail}`, {
+      fetch(`${Constants.SERVER_URL}/instances/${userEmail}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`, // Include the token in the authorization header
@@ -51,7 +52,7 @@ export const Instances = () => {
   // Function to handle adding a new instance
   const addInstance = () => {
     if (instanceName.trim() !== '') {
-      fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}`, {
+      fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -81,7 +82,7 @@ export const Instances = () => {
   const saveEditedInstance = (index) => {
     if (editedInstanceName.trim() !== '') {
       const authHeader = `Bearer ${token}`;
-      fetch(`http://localhost:3333/instances/${userEmail}/${instances[index].name}`, {
+      fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instances[index].name}`, {
         method: 'PUT',
         headers: {
           Authorization: authHeader,
@@ -113,7 +114,7 @@ export const Instances = () => {
 
     if (confirmedName === instanceToDelete.name) {
       const authHeader = `Bearer ${token}`;
-      fetch(`http://localhost:3333/instances/${userEmail}/${instanceToDelete.name}`, {
+      fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceToDelete.name}`, {
         method: 'DELETE',
         headers: {
           Authorization: authHeader,

@@ -11,7 +11,7 @@ import { Table } from './components/Table';
 import { AdminInstanceNames } from './admin-pages/AdminInstanceNames';
 
 function App() {
-  const [setToken] = useState('');
+ const [setToken] = useState('');
   return (
     <>
     <Router>

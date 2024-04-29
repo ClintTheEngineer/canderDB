@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Navbar } from '../components/Navbar';
+import { Constants } from '../pages/Constants';
+
 
 export const Login = () => {
     const [email, setEmail] = useState('');
@@ -10,7 +12,8 @@ export const Login = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [token, setToken] = useState('');
     const navigate = useNavigate();
-    const appName = 'CanderDB';
+
+
 
     Login.propTypes = {
       setToken: PropTypes.func.isRequired,
@@ -26,7 +29,7 @@ export const Login = () => {
     const HandleLogin = async () => {
       try {
         const authHeader = `Bearer ${token}`;
-        const response = await fetch('http://localhost:3333/login', {
+        const response = await fetch(`${Constants.SERVER_URL}/login`, {
           method: 'POST',
           headers: {
             'Authorization': authHeader,
@@ -66,7 +69,7 @@ export const Login = () => {
       <>
        <Navbar />
       <div className="login-container">  
-        <h1 id='login-hdr' className='app-name'>{appName}</h1>
+        <h1 id='login-hdr' className='app-name'>{Constants.APP_NAME}</h1>
         <input
           type="text"
           placeholder="Email"
@@ -88,7 +91,5 @@ export const Login = () => {
     );
   }
 
-  Login.propTypes = {
-    setToken: PropTypes.string.isRequired
-  }
+  
   

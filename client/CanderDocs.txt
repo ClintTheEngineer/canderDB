@@ -1,6 +1,6 @@
 PUT request:
 
-http://localhost:3333/instances/mmaaced@gmail.com/people/school.db
+${Constants.SERVER_URL}/instances/mmaaced@gmail.com/people/school.db
 
 *****************************************
 
@@ -94,7 +94,7 @@ school.db
 **************************************************************************************************************
 POST
 
-http://localhost:3333/instances/mmaaced@gmail.com/people/school.db
+${Constants.SERVER_URL}/instances/mmaaced@gmail.com/people/school.db
 
 {
       "subject": "chemistry",

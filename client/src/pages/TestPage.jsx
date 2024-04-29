@@ -18,7 +18,7 @@ export const TestPage = () => {
   
 
   const fetchObjects = useCallback(() => {
-    fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}`)
+    fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}`)
       .then(response => response.json())
       .then(data => setSavedObjects(data))
       .catch(error => console.error('Error fetching instances:', error));
@@ -40,7 +40,7 @@ export const TestPage = () => {
     try {
       
       const tableName = objectName; // Table name is the same as object name
-      const response = fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${tableName}.db`);
+      const response = fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${tableName}.db`);
       if (response.ok) {
         const data = response.json();
         setSelectedObjectData(data);
@@ -69,7 +69,7 @@ export const TestPage = () => {
   
   const fetchEntries = async (objectId) => {
     try {
-      const response = await fetch(`http://localhost:3333/instances/:userEmail/${objectId}/entries`);
+      const response = await fetch(`${Constants.SERVER_URL}/instances/:userEmail/${objectId}/entries`);
       if (response.ok) {
         const data = await response.json();
         setEntries(data.entries);
@@ -128,7 +128,7 @@ export const TestPage = () => {
        // Replace with user's email
       //const instanceName = objectName; // Replace with instance name
       const newTableName = objectName; // Replace with new table name
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${newTableName}`, {
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${newTableName}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

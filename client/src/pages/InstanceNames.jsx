@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { InstancesButton } from '../components/InstancesButton';
+import { Constants } from './Constants';
 
 export const InstanceNames = () => {
   const [tableName, setTableName] = useState('');
@@ -24,7 +25,7 @@ export const InstanceNames = () => {
   const fetchSchema = useCallback(async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}/schema`, {
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}/schema`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -50,7 +51,7 @@ export const InstanceNames = () => {
   const fetchFileList = useCallback(async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}`, {
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -83,7 +84,7 @@ export const InstanceNames = () => {
     };
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${tableName}.db`, {
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${tableName}.db`, {
         method: 'POST',
         headers: {
           Authorization: authHeader,
@@ -115,7 +116,7 @@ export const InstanceNames = () => {
     setSchema('')
     setSelectedInstance(instance);
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${instance} `, {
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${instance} `, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -138,7 +139,7 @@ export const InstanceNames = () => {
     const token = localStorage.getItem('token');
     setSelectedInstance(instance);
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${instance}/schema`, {
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${instance}/schema`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -197,7 +198,7 @@ const handleInputChange = (e, formType) => {
         body: JSON.stringify(updatedFormData)
       };
   
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}`, requestOptions);
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}`, requestOptions);
   
       if (!response.ok) {
         throw new Error('Failed to delete entry', updatedFormData);
@@ -225,7 +226,7 @@ const handleInputChange = (e, formType) => {
     const token = localStorage.getItem('token');
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}`, {
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}`, {
         method: 'POST',
         headers: {
           Authorization: authHeader,
@@ -261,7 +262,7 @@ const handleInputChange = (e, formType) => {
     
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}`, {
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}`, {
         method: 'PUT',
         headers: {
           Authorization: authHeader,
@@ -314,7 +315,7 @@ const handleInputChange = (e, formType) => {
       });    
     
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}`, {
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}`, {
         method: 'PUT',
         headers: {
           Authorization: authHeader,
@@ -409,7 +410,7 @@ const handleInputChange = (e, formType) => {
         }
       };
   
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}/remove`, requestOptions);
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}/remove`, requestOptions);
   
       if (!response.ok) {
         throw new Error('Failed to delete entry');

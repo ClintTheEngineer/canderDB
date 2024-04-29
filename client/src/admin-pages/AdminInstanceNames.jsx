@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { InstancesButton } from '../components/InstancesButton';
+import { Constants } from '../pages/Constants';
 
 export const AdminInstanceNames = () => {
   const [tableName, setTableName] = useState('');
@@ -18,14 +19,14 @@ export const AdminInstanceNames = () => {
   const [action, setAction] = useState(null); // State to track the active action
   const [originalFormData, setOriginalFormData] = useState({});
   const [updatedFormData, setUpdatedFormData] = useState({});
-   const [carrier, setCarrier] = useState({});
+   //const [carrier, setCarrier] = useState({});
 
  
 
    const fetchFileList = useCallback(async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://localhost:3333/canderdb-admin`, {
+      const response = await fetch(`${Constants.SERVER_URL}/canderdb-admin`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -60,7 +61,7 @@ export const AdminInstanceNames = () => {
     };
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`http://localhost:3333/instances/canderdb-admin/${tableName}.db`, {
+      const response = await fetch(`${Constants.SERVER_URL}/instances/canderdb-admin/${tableName}.db`, {
         method: 'POST',
         headers: {
           Authorization: authHeader,
@@ -91,7 +92,7 @@ export const AdminInstanceNames = () => {
     setSchema('')
     setSelectedInstance(instance);
     try {
-      const response = await fetch(`http://localhost:3333/canderdb-admin/${instance}`, {
+      const response = await fetch(`${Constants.SERVER_URL}/canderdb-admin/${instance}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -114,7 +115,7 @@ export const AdminInstanceNames = () => {
     const token = localStorage.getItem('token');
     setSelectedInstance(instance);
     try {
-      const response = await fetch(`http://localhost:3333/canderdb-admin/${instance}/schema`, {
+      const response = await fetch(`${Constants.SERVER_URL}/canderdb-admin/${instance}/schema`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -173,7 +174,7 @@ const handleInputChange = (e, formType) => {
         body: JSON.stringify(updatedFormData)
       };
   
-      const response = await fetch(`http://localhost:3333/canderdb-admin/${instanceName}/${selectedInstance}`, requestOptions);
+      const response = await fetch(`${Constants.SERVER_URL}/canderdb-admin/${instanceName}/${selectedInstance}`, requestOptions);
   
       if (!response.ok) {
         throw new Error('Failed to delete entry', updatedFormData);
@@ -201,7 +202,7 @@ const handleInputChange = (e, formType) => {
     const token = localStorage.getItem('token');
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`http://localhost:3333/canderdb-admin/${instanceName}/${selectedInstance}`, {
+      const response = await fetch(`${Constants.SERVER_URL}/canderdb-admin/${instanceName}/${selectedInstance}`, {
         method: 'POST',
         headers: {
           Authorization: authHeader,
@@ -237,7 +238,7 @@ const handleInputChange = (e, formType) => {
     
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`http://localhost:3333/canderdb-admin/${instanceName}/${selectedInstance}`, {
+      const response = await fetch(`${Constants.SERVER_URL}/canderdb-admin/${instanceName}/${selectedInstance}`, {
         method: 'PUT',
         headers: {
           Authorization: authHeader,
@@ -335,7 +336,7 @@ const handleInputChange = (e, formType) => {
         }
       };
   
-      const response = await fetch(`http://localhost:3333/canderdb-admin/${selectedInstance}/remove`, requestOptions);
+      const response = await fetch(`${Constants.SERVER_URL}/canderdb-admin/${selectedInstance}/remove`, requestOptions);
   
       if (!response.ok) {
         throw new Error('Failed to delete entry');

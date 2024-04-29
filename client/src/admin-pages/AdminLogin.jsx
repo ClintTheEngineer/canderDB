@@ -27,7 +27,7 @@ export const AdminLogin = () => {
     const HandleLogin = async () => {
       try {
         const authHeader = `Bearer ${token}`;
-        const response = await fetch('http://localhost:3333/admin-login', {
+        const response = await fetch('${Constants.SERVER_URL}/admin-login', {
           method: 'POST',
           headers: {
             'Authorization': authHeader,

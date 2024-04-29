@@ -34,7 +34,7 @@ export const Register = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3333/register', {
+      const response = await fetch('${Constants.SERVER_URL}/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

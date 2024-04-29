@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { Constants } from '../pages/Constants';
 
 export const Table = () => {
   // State to keep track of the sorting order
@@ -15,7 +16,7 @@ token;
   const fetchFileList = useCallback(async () => {
     const token = localStorage.getItem('token')
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}`,{
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -55,7 +56,7 @@ token;
   const fetchDataForTable = async (tableName) => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${encodeURIComponent(tableName)}`,{
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${encodeURIComponent(tableName)}`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }
