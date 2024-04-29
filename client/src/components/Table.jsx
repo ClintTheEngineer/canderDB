@@ -10,12 +10,20 @@ export const Table = () => {
   const userEmail = localStorage.getItem('email');
   const instanceName = 'links';
   const [fileList, setFileList] = useState([]);
-
+  const [token, setToken] = useState('');
+token;
   const fetchFileList = useCallback(async () => {
+    const token = localStorage.getItem('token')
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}`);
+      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (response.ok) {
         const data = await response.json();
+        const token = data.token;
+        setToken(token)
         setFileList(data.files);
       } else {
         console.error('Failed to fetch file list');
@@ -45,10 +53,17 @@ export const Table = () => {
 
   // Function to fetch data for a specific table and display it in a div below the table
   const fetchDataForTable = async (tableName) => {
+    const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${encodeURIComponent(tableName)}`);
+      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${encodeURIComponent(tableName)}`,{
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (response.ok) {
         const data = await response.json();
+        const token = data.token;
+        setToken(token)
         setFetchedData(data);
       } else {
         console.error(`Failed to fetch data for table ${tableName}`);

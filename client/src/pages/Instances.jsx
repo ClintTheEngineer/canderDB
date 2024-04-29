@@ -22,8 +22,6 @@ export const Instances = () => {
 
   const userEmail = localStorage.getItem('email');
   const token = localStorage.getItem('token');
-  console.log(token)
-  console.log(userEmail)
 
   // Function to fetch instance list from server
   const fetchInstances = useCallback(() => {
@@ -56,6 +54,7 @@ export const Instances = () => {
       fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ name: instanceName }),
@@ -81,9 +80,11 @@ export const Instances = () => {
   // Function to handle saving the edited instance name
   const saveEditedInstance = (index) => {
     if (editedInstanceName.trim() !== '') {
+      const authHeader = `Bearer ${token}`;
       fetch(`http://localhost:3333/instances/${userEmail}/${instances[index].name}`, {
         method: 'PUT',
         headers: {
+          Authorization: authHeader,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ newName: editedInstanceName }),
@@ -111,8 +112,13 @@ export const Instances = () => {
     const instanceToDelete = instances[deletingIndex];
 
     if (confirmedName === instanceToDelete.name) {
+      const authHeader = `Bearer ${token}`;
       fetch(`http://localhost:3333/instances/${userEmail}/${instanceToDelete.name}`, {
         method: 'DELETE',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        }
       })
       .then(() => {
         const updatedInstances = [...instances];

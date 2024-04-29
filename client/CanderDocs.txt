@@ -129,3 +129,89 @@ PATCH
     "oldKey": "letter_grades",
     "newKey": "letter_grade"
 }
+
+
+
+----------------------------------------------------------------
+POST
+
+{
+  "name": "user",
+  "keys": [
+    {
+      "name": "email",
+      "type": "string"
+    },
+    {
+      "name": "hashed_password",
+      "type": "string"
+    }
+  ],
+  "entries": [
+    {
+      "name": "mmaaced@gmail.com",
+      "hashed_password": "$2b$10$HjMvHV7QLcDomAYikRt0A.WK9jk1j4t4xFBxnD3zTOW8MeO.ckr2K"
+    }, 
+    {
+      "name": "example@email.com",
+      "hashed_password": "$2b$10$xYutGCi.CMyhxrESj3juKumlFvk/LjVrRwWLLXDoG1z4MiDhfa7FC"
+    }
+  ]
+}
+
+
+POST
+
+
+{
+ "name": "Boom Bap",
+ "weight_class": 265,
+ "champion": true
+}
+
+
+--------------------------------------
+
+PUT
+
+{
+  "criteria": {
+    "name": "Jon Jones"
+  },
+  "fields": {
+    "champion": true, 
+    "weight_class": 205
+  }
+}
+
+
+{
+  "criteria": {
+    "type": "kiwi"
+  },
+  "fields": {
+    "tropical": false
+  }
+}
+
+
+
+
+{
+  "schema": [
+    {
+      "name": "vegetable_name",
+      "type": "string"
+    },
+    {
+      "name": "green", 
+      "type": "boolean"
+    }
+  ], 
+  "keys": [
+  {
+      "oldKey": "veggie_name",
+      "newKey": "vegetable_name"
+  }
+  ]
+}

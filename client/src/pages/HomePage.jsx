@@ -1,11 +1,12 @@
-import { LoginButton } from "../components/LoginButton";
-import { SignupButton } from "../components/SignupButton";
+import { Navbar } from "../components/Navbar";
 
 export const HomePage = () => {
   return (
     <>
-    <LoginButton />
-    <SignupButton />
+    <section id="home-page">
+    <Navbar />
+    <span>Welcome to CanderDB, a NoSQL database designed with ease of use in mind. CanderDB is currently still in beta.</span>
+    </section>
     </>
   )
 }

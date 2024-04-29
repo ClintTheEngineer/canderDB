@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { InstancesButton } from '../components/InstancesButton';
 
-export const InstanceNames = () => {
+export const AdminInstanceNames = () => {
   const [tableName, setTableName] = useState('');
   const [numArguments, setNumArguments] = useState(0);
   const [argumentNames, setArgumentNames] = useState([]);
@@ -11,7 +11,6 @@ export const InstanceNames = () => {
   const [fileList, setFileList] = useState([]);
   const [tableContents, setTableContents] = useState(null);
   const { pathParam } = useParams();
-  const userEmail = localStorage.getItem('email');
   const instanceName = pathParam;
   const [token, setToken] = useState('');
   const [schema, setSchema] = useState(null);
@@ -19,38 +18,14 @@ export const InstanceNames = () => {
   const [action, setAction] = useState(null); // State to track the active action
   const [originalFormData, setOriginalFormData] = useState({});
   const [updatedFormData, setUpdatedFormData] = useState({});
-   const [carrier, setCarrier] = useState({})
+   const [carrier, setCarrier] = useState({});
 
-  const fetchSchema = useCallback(async () => {
+ 
+
+   const fetchFileList = useCallback(async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}/schema`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
-       const data = await response.json();
-       setCarrier(data);
-      } else {
-        console.error('Failed to fetch file list');
-      }
-    } catch (error) {
-      console.error('Error fetching file list:', error);
-    }
-  }, [instanceName, userEmail, selectedInstance]);
-
-  useEffect(() => {
-    fetchSchema();
-  }, [fetchSchema]);
-
-
-
-
-  const fetchFileList = useCallback(async () => {
-    const token = localStorage.getItem('token');
-    try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}`, {
+      const response = await fetch(`http://localhost:3333/canderdb-admin`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,11 +40,13 @@ export const InstanceNames = () => {
     } catch (error) {
       console.error('Error fetching file list:', error);
     }
-  }, [instanceName, userEmail]);
+  }, []);
 
   useEffect(() => {
     fetchFileList();
   }, [fetchFileList]);
+ 
+
 
   
 
@@ -83,7 +60,7 @@ export const InstanceNames = () => {
     };
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${tableName}.db`, {
+      const response = await fetch(`http://localhost:3333/instances/canderdb-admin/${tableName}.db`, {
         method: 'POST',
         headers: {
           Authorization: authHeader,
@@ -101,7 +78,6 @@ export const InstanceNames = () => {
         setArgumentNames([]);
         setArgumentTypes([]);
         // Update file list
-        fetchFileList();
       } else {
         console.error('Failed to create table');
       }
@@ -115,7 +91,7 @@ export const InstanceNames = () => {
     setSchema('')
     setSelectedInstance(instance);
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${instance} `, {
+      const response = await fetch(`http://localhost:3333/canderdb-admin/${instance}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -138,7 +114,7 @@ export const InstanceNames = () => {
     const token = localStorage.getItem('token');
     setSelectedInstance(instance);
     try {
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${instance}/schema`, {
+      const response = await fetch(`http://localhost:3333/canderdb-admin/${instance}/schema`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -197,7 +173,7 @@ const handleInputChange = (e, formType) => {
         body: JSON.stringify(updatedFormData)
       };
   
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}`, requestOptions);
+      const response = await fetch(`http://localhost:3333/canderdb-admin/${instanceName}/${selectedInstance}`, requestOptions);
   
       if (!response.ok) {
         throw new Error('Failed to delete entry', updatedFormData);
@@ -208,7 +184,7 @@ const handleInputChange = (e, formType) => {
       setTableContents(null);
       setUpdatedFormData({})
         // Update file list
-        fetchFileList();
+        
     } catch (error) {
       console.error('Error deleting entry:', error);
       // Optionally, handle error here (e.g., show a notification to the user)
@@ -225,7 +201,7 @@ const handleInputChange = (e, formType) => {
     const token = localStorage.getItem('token');
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}`, {
+      const response = await fetch(`http://localhost:3333/canderdb-admin/${instanceName}/${selectedInstance}`, {
         method: 'POST',
         headers: {
           Authorization: authHeader,
@@ -242,7 +218,7 @@ const handleInputChange = (e, formType) => {
         setTableContents(null);
         setUpdatedFormData({}); // Clear updatedFormData
         // Update file list
-        fetchFileList();
+        
       } else {
         console.error('Failed to create table', updatedFormData);
       }
@@ -261,7 +237,7 @@ const handleInputChange = (e, formType) => {
     
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}`, {
+      const response = await fetch(`http://localhost:3333/canderdb-admin/${instanceName}/${selectedInstance}`, {
         method: 'PUT',
         headers: {
           Authorization: authHeader,
@@ -278,7 +254,7 @@ const handleInputChange = (e, formType) => {
         setUpdatedFormData({}); // Clear updatedFormData
         setOriginalFormData({}); // Clear originalFormData
         // Update file list
-        fetchFileList();
+        
       } else {
         console.error('Failed to create table');
       }
@@ -288,57 +264,7 @@ const handleInputChange = (e, formType) => {
   };
 
 
-  const editColumnEntry = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');   
-    try {
-      // Fetch schema only when needed
-      await fetchSchema();
-      console.log(Object.values(originalFormData).toString())
-      const oldKeyValue = Object.values(originalFormData).toString();
-      const newKeyValue = Object.values(updatedFormData).toString();
-      let requestBody = {
-        schema: [ ...carrier ],
-        keys: [{ ...updatedFormData }]
-      };
-  
-      let poster = {
-        schema: [...requestBody.schema],
-        keys: [...oldKeyValue, ...newKeyValue]
-      };
-  
-      poster.keys = requestBody.keys.map(()=> {
-        let oldKey = oldKeyValue; // Extracting the key dynamically
-        let newKey = newKeyValue; // Extracting the value dynamically
-        return { oldKey, newKey };
-      });    
-    
-      const authHeader = `Bearer ${token}`;
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
-        },
-        body: [JSON.stringify(poster)],
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Entry added successfully');
-        // Clear form inputs after successful submission
-        setToken(data.token);
-        setSchema('');
-        setUpdatedFormData({}); // Clear updatedFormData
-        setOriginalFormData({}); // Clear originalFormData
-        // Update file list
-        fetchFileList();
-      } else {
-        console.error('Failed to create table');
-      }
-    } catch (error) {
-      console.error('Error creating table:', error);
-    }
-  };
+ 
   
 
 
@@ -409,7 +335,7 @@ const handleInputChange = (e, formType) => {
         }
       };
   
-      const response = await fetch(`http://localhost:3333/instances/${userEmail}/${instanceName}/${selectedInstance}/remove`, requestOptions);
+      const response = await fetch(`http://localhost:3333/canderdb-admin/${selectedInstance}/remove`, requestOptions);
   
       if (!response.ok) {
         throw new Error('Failed to delete entry');
@@ -418,7 +344,7 @@ const handleInputChange = (e, formType) => {
       console.log('Entry deleted successfully');
       setSchema('');
         // Update file list
-        fetchFileList();
+        
     } catch (error) {
       console.error('Error deleting entry:', error);
       // Optionally, handle error here (e.g., show a notification to the user)
@@ -430,11 +356,11 @@ const handleInputChange = (e, formType) => {
     <>
       <InstancesButton />
       <form onSubmit={handleSubmit}>
-        <label className='instance-names'>
+        <label>
           Table Name:
           <input type="text" value={tableName} onChange={(e) => setTableName(e.target.value)} required />
         </label>
-        <label className='instance-names'>
+        <label>
           Number of Arguments:
           <input type="number" value={numArguments} onChange={(e) => setNumArguments(parseInt(e.target.value))} min={0} />
         </label>
@@ -477,7 +403,7 @@ const handleInputChange = (e, formType) => {
       
 
       <div>
-        <h3 className='instance-names'>Instance Selector</h3>
+        <h3>Instance Selector</h3>
         <select value={selectedInstance} onChange={(e) => handleInstanceSelect(e.target.value)}>
           <option value="default">Select Instance</option>
           {fileList.map((file) => (
@@ -686,10 +612,10 @@ const handleInputChange = (e, formType) => {
       
       {tableContents && (
         <div>
-          <h3 className='instance-names'>Table Contents for {selectedInstance}</h3>
+          <h3>Table Contents for {selectedInstance}</h3>
           {tableContents && (
             <div className="fetched-data-table">
-              <h2 className='instance-names'>Data for selected table:</h2>
+              <h2>Data for selected table:</h2>
               <table>
                 <thead>
                   <tr>
