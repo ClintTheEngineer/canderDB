@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Constants } from './Constants';
 
 export const Register = () => {
   const [email, setEmail] = useState('');
@@ -34,7 +35,7 @@ export const Register = () => {
     }
 
     try {
-      const response = await fetch('${Constants.SERVER_URL}/register', {
+      const response = await fetch(`${Constants.SERVER_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,8 +51,11 @@ export const Register = () => {
       } else if (response.status === 403 || response.status === 405) {
         setRegistrationStatus(data.error);
       } else if (response.status === 406) {
-        setRegistrationStatus(data.error);
-      } else {
+        setRegistrationStatus(data.error); 
+      } else if (response.status === 409) {
+        setRegistrationStatus(data.error); 
+
+      }else {
         console.error('Registration failed:', JSON.parse(data));
       }
     } catch (error) {
