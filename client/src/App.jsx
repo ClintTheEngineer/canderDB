@@ -7,8 +7,8 @@ import { Register } from './pages/Register';
 import { Login } from './pages/Login';
 import { PrivateRoutes } from './pages/PrivateRoutes';
 import { InstanceNames } from './pages/InstanceNames';
-import { Table } from './components/Table';
 import { AdminInstanceNames } from './admin-pages/AdminInstanceNames';
+import { Documentation } from './pages/Documentation';
 
 function App() {
  const [setToken] = useState('');
@@ -16,10 +16,10 @@ function App() {
     <>
     <Router>
      <Routes>
-     <Route path='/table' element={<Table />} />
      <Route path="/" element={<HomePage />} />     
      <Route path='/register' element={<Register />} />
      <Route path='/login' element={<Login setToken={setToken}/>} />
+     <Route path='/docs' element={<Documentation />} />
      <Route element={<PrivateRoutes />}>
      <Route path='/instances' element={<Instances />} />
      <Route path=':pathParam' element={<InstanceNames />}  />

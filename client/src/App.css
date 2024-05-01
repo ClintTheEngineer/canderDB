@@ -155,10 +155,53 @@ span {
   color: rgb(247, 15, 15);
   font-size: x-large;
   font-weight: 800;
-  -webkit-text-stroke: 1px rgb(205, 205, 239);
+  -webkit-text-stroke: 1px rgb(28, 28, 233);
 }
 
 
 .instances {
   margin: 10px;
+}
+
+
+.documentation-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.documentation-title {
+  text-align: center;
+  color: #333;
+}
+
+.documentation-section {
+  margin-bottom: 30px;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  color: #f6ff00;
+}
+
+pre {
+  background-color: #cabebe;
+  padding: 10px;
+  overflow-x: auto;
+  border-radius: 5px;
+}
+
+code {
+  font-family: monospace;
+  font-weight: 800;
+  color:black;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.documentation-container p {
+  font-weight: 800;
+  color: #000;
 }

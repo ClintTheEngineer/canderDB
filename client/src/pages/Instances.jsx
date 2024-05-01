@@ -2,6 +2,7 @@ import { CreateInstanceButton } from "../components/CreateInstanceButton";
 import { useState, useEffect, useCallback } from 'react';
 import LogoutButton from "../components/SignoutButton";
 import { Constants } from "./Constants";
+import { Navbar } from "../components/Navbar";
 
 export const Instances = () => {
   // State to manage the list of instances
@@ -135,6 +136,7 @@ export const Instances = () => {
 
   return (
     <>
+    <Navbar />
     <CreateInstanceButton onClick={() => setShowInput(true)}/>
       <section>
         <h2>Instances</h2>

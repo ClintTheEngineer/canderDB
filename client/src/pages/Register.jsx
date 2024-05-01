@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Constants } from './Constants';
+import { Navbar } from '../components/Navbar';
 
 export const Register = () => {
   const [email, setEmail] = useState('');
@@ -65,6 +66,7 @@ export const Register = () => {
 
   return (
     <>
+    <Navbar />
     <h2 id='register'>Registration</h2>
       <div id='sign-up-form'> 
         <input

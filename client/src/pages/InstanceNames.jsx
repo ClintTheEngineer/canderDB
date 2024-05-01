@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { InstancesButton } from '../components/InstancesButton';
 import { Constants } from './Constants';
+import { TokenButton } from '../components/TokenButton';
+import { Navbar } from '../components/Navbar';
 
 export const InstanceNames = () => {
   const [tableName, setTableName] = useState('');
@@ -429,6 +431,8 @@ const handleInputChange = (e, formType) => {
 
   return (
     <>
+    <Navbar />
+      <TokenButton />
       <InstancesButton />
       <form onSubmit={handleSubmit}>
         <label className='instance-names'>
