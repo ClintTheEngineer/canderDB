@@ -9,9 +9,11 @@ import { PrivateRoutes } from './pages/PrivateRoutes';
 import { InstanceNames } from './pages/InstanceNames';
 import { AdminInstanceNames } from './admin-pages/AdminInstanceNames';
 import { Documentation } from './pages/Documentation';
+import { ForgotPassword } from './pages/ForgotPassword';
+import { ResetPassword } from './pages/ResetPassword';
 
 function App() {
- const [setToken] = useState('');
+ const [token, setToken] = useState('');
   return (
     <>
     <Router>
@@ -19,6 +21,8 @@ function App() {
      <Route path="/" element={<HomePage />} />     
      <Route path='/register' element={<Register />} />
      <Route path='/login' element={<Login setToken={setToken}/>} />
+     <Route path='/forgot-password' element={<ForgotPassword setToken={setToken}/>} />
+     <Route path="/reset-password" component={token} element={<ResetPassword />} />
      <Route path='/docs' element={<Documentation />} />
      <Route element={<PrivateRoutes />}>
      <Route path='/instances' element={<Instances />} />
