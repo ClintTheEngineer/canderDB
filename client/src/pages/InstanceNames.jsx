@@ -22,7 +22,8 @@ export const InstanceNames = () => {
   const [action, setAction] = useState(null); // State to track the active action
   const [originalFormData, setOriginalFormData] = useState({});
   const [updatedFormData, setUpdatedFormData] = useState({});
-   const [carrier, setCarrier] = useState({})
+   const [carrier, setCarrier] = useState({});
+   const [id, setId] = useState('');
 
   const fetchSchema = useCallback(async () => {
     const token = localStorage.getItem('token');
@@ -189,22 +190,22 @@ const handleInputChange = (e, formType) => {
  
   const deleteTableEntry = async (e) => {    
     e.preventDefault();
-    
+    const token = localStorage.getItem('token');
+    const idValue = id;
     try {
       const authHeader = `Bearer ${token}`;
-      const requestOptions = {
+        const requestOptions = {
         method: 'DELETE',
         headers: {
           Authorization: authHeader,
           'Content-Type': 'application/json',
-        }, 
-        body: JSON.stringify(updatedFormData)
+        }
       };
   
-      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}`, requestOptions);
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}/${idValue}`, requestOptions);
   
       if (!response.ok) {
-        throw new Error('Failed to delete entry', updatedFormData);
+        throw new Error('Failed to delete entry');
       }  
       // Optionally, handle success response here
       console.log('Entry deleted successfully');
@@ -258,25 +259,26 @@ const handleInputChange = (e, formType) => {
   const editTableEntry = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
-    //const id = document.getElementById('table-id');
-    let requestBody = {
-      criteria: { ...originalFormData },
-      fields: { ...updatedFormData }
-    };
-    
+    const idValue = id;
+    // Create the request body based on updatedFormData
+    let requestBody = {};
+    for (const [key, value] of Object.entries(updatedFormData)) {
+      requestBody[key] = value;
+    }
+  
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}`, {
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}/${idValue}`, {
         method: 'PUT',
         headers: {
           Authorization: authHeader,
           'Content-Type': 'application/json',
         },
-        body: [JSON.stringify(requestBody)],
+        body: JSON.stringify(requestBody),
       });
       if (response.ok) {
         const data = await response.json();
-        console.log('Entry added successfully');
+        console.log('Entry updated successfully');
         // Clear form inputs after successful submission
         setToken(data.token);
         setSchema('');
@@ -285,12 +287,13 @@ const handleInputChange = (e, formType) => {
         // Update file list
         fetchFileList();
       } else {
-        console.error('Failed to create table');
+        console.error('Failed to update entry');
       }
     } catch (error) {
-      console.error('Error creating table:', error);
+      console.error('Error updating entry:', error);
     }
   };
+  
 
 
   const editColumnEntry = async (e) => {
@@ -403,6 +406,7 @@ const handleInputChange = (e, formType) => {
 
   const deleteTable = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
     
     try {
       const authHeader = `Bearer ${token}`;
@@ -414,7 +418,7 @@ const handleInputChange = (e, formType) => {
         }
       };
   
-      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}/remove`, requestOptions);
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}`, requestOptions);
   
       if (!response.ok) {
         throw new Error('Failed to delete entry');
@@ -505,6 +509,7 @@ const handleInputChange = (e, formType) => {
       </button>
       <button onClick={deleteTable} type="submit">Delete Table</button>
       <button onClick={handleColumnEditEntry}>Edit Entry Column</button>
+      <button>Edit Column Data Type</button>
       {action === 'add' && schema && (
         <form onSubmit={addTableEntry}>
           {schema.map((field) => (
@@ -538,69 +543,33 @@ const handleInputChange = (e, formType) => {
       )}
       {action === 'delete' && schema && (
         <form onSubmit={deleteTableEntry}>
-          {schema.map((field) => (
-            <div key={field.name}>
-              <label>
-                {field.name}:
-                {field.type === 'boolean' ? (
-                  <select
-                    name={field.name}
-                    value={updatedFormData[field.name] || ''}
-                    onChange={handleInputChange}
-                    required
-                  > 
-                    <option value="false">false</option>
-                    <option value="true">true</option>
-                  </select>
-                ) : (
-                  <input
-                    type={field.type}
-                    name={field.name}
-                    value={updatedFormData[field.name] || ''}
-                    onChange={handleInputChange}
-                    placeholder={field.type}
-                  />
-                )}
-              </label>
-            </div>
-          ))}
+           <label>id: 
+   <input 
+              type='number' 
+              value={id} 
+              onChange={(e) => setId(e.target.value)} // Update ID state
+              required 
+      />
+    </label>
           <button type="submit">Submit</button>
         </form>
       )}
   {action === 'edit' && schema && (
   <form onSubmit={editTableEntry}>
    {/* Original values form */}
-   {schema.map((field) => (
-      <div key={field.name}>
-        <label>
-          {field.name} (Original):
-          {field.type === 'boolean' ? (
-            <select
-              name={field.name}
-              value={originalFormData[field.name] || ''}
-              onChange={(e) => handleInputChange(e, 'original')}
-              required
-            >
-              <option value="false">false</option>
-              <option value="true">true</option>
-            </select>
-          ) : (
-            <input
-              type={field.type}
-              name={field.name}
-              value={originalFormData[field.name] || ''}
-              onChange={(e) => handleInputChange(e, 'original')}
-              placeholder={`${field.type} original value`}
-            />
-          )}
-        </label>
-      </div>
-    ))}
+   <label>id: 
+   <input 
+              type='number' 
+              value={id} 
+              onChange={(e) => setId(e.target.value)} // Update ID state
+              required 
+      />
+    </label>
     {/* Updated values form */}
     {schema.map((field) => (
       <div key={field.name}>
         <label>
-          {"newKey"} (Updated):
+          {field.name} (Updated):
           {field.type === 'boolean' ? (
             <select
               name={field.name}
@@ -703,7 +672,7 @@ const handleInputChange = (e, formType) => {
               {/* Render id column header */}
               <th id='table-id'>id</th>
               {/* Render table headers */}
-              {tableContents.length > 0 &&
+              {tableContents.length >0 &&
                 Object.keys(tableContents[0]).map((key) => <th key={key}>{key}</th>)}
             </tr>
           </thead>
@@ -711,7 +680,7 @@ const handleInputChange = (e, formType) => {
             {/* Render table rows */}
             {tableContents.map((row, rowIndex) => (
               <tr key={rowIndex}>                      
-                <td>{rowIndex + 1}</td> {/* id column */}
+              <td>{rowIndex + 1}</td>{/* id column */}
                 {Object.values(row).map((value, colIndex) => (
                   <td key={colIndex}>{value.toString()}</td>
                 ))}
