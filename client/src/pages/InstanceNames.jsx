@@ -129,6 +129,7 @@ export const InstanceNames = () => {
         setToken(token);
         setTableContents(data);
         setSchema(null)
+        console.log(data)
       } else {
         console.error(`Failed to fetch table contents for ${instance}`);
       }
@@ -257,6 +258,7 @@ const handleInputChange = (e, formType) => {
   const editTableEntry = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
+    //const id = document.getElementById('table-id');
     let requestBody = {
       criteria: { ...originalFormData },
       fields: { ...updatedFormData }
@@ -567,8 +569,8 @@ const handleInputChange = (e, formType) => {
       )}
   {action === 'edit' && schema && (
   <form onSubmit={editTableEntry}>
-    {/* Original values form */}
-    {schema.map((field) => (
+   {/* Original values form */}
+   {schema.map((field) => (
       <div key={field.name}>
         <label>
           {field.name} (Original):
@@ -689,36 +691,39 @@ const handleInputChange = (e, formType) => {
   </form>
 )}
       
-      {tableContents && (
-        <div>
-          <h3 className='instance-names'>Table Contents for {selectedInstance}</h3>
-          {tableContents && (
-            <div className="fetched-data-table">
-              <h2 className='instance-names'>Data for selected table:</h2>
-              <table>
-                <thead>
-                  <tr>
-                    {/* Render table headers */}
-                    {tableContents.length > 0 &&
-                      Object.keys(tableContents[0]).map((key) => <th key={key}>{key}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* Render table rows */}
-                  {tableContents.map((row, rowIndex) => (
-                    <tr key={rowIndex}>                      
-                      {Object.values(row).map((value, colIndex) => (
-                        <td key={colIndex}>{value.toString()}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
+  {tableContents && (
+  <div>
+    <h3 className='instance-names'>Table Contents for {selectedInstance}</h3>
+    {tableContents && (
+      <div className="fetched-data-table">
+        <h2 className='instance-names'>Data for selected table:</h2>
+        <table>
+          <thead>
+            <tr>
+              {/* Render id column header */}
+              <th id='table-id'>id</th>
+              {/* Render table headers */}
+              {tableContents.length > 0 &&
+                Object.keys(tableContents[0]).map((key) => <th key={key}>{key}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {/* Render table rows */}
+            {tableContents.map((row, rowIndex) => (
+              <tr key={rowIndex}>                      
+                <td>{rowIndex + 1}</td> {/* id column */}
+                {Object.values(row).map((value, colIndex) => (
+                  <td key={colIndex}>{value.toString()}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+)}
+
     </>
   );
 };
