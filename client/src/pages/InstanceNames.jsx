@@ -18,11 +18,9 @@ export const InstanceNames = () => {
   const instanceName = pathParam;
   const [token, setToken] = useState('');
   const [schema, setSchema] = useState(null);
- // const [formData, setFormData] = useState({});
-  const [action, setAction] = useState(null); // State to track the active action
+  const [action, setAction] = useState(null);
   const [originalFormData, setOriginalFormData] = useState({});
   const [updatedFormData, setUpdatedFormData] = useState({});
-   const [carrier, setCarrier] = useState({});
    const [id, setId] = useState('');
    const [newDataTypes, setNewDataTypes] = useState({});
 
@@ -36,7 +34,7 @@ export const InstanceNames = () => {
       });
       if (response.ok) {
        const data = await response.json();
-       setCarrier(data);
+       setSchema(data);
       } else {
         console.error('Failed to fetch file list');
       }
@@ -303,33 +301,17 @@ const handleInputChange = (e, formType) => {
     try {
       // Fetch schema only when needed
       await fetchSchema();
-      console.log(Object.values(originalFormData).toString())
       const oldKeyValue = Object.values(originalFormData).toString();
-      const newKeyValue = Object.values(updatedFormData).toString();
-      let requestBody = {
-        schema: [ ...carrier ],
-        keys: [{ ...updatedFormData }]
-      };
-  
-      let poster = {
-        schema: [...requestBody.schema],
-        keys: [...oldKeyValue, ...newKeyValue]
-      };
-  
-      poster.keys = requestBody.keys.map(()=> {
-        let oldKey = oldKeyValue; // Extracting the key dynamically
-        let newKey = newKeyValue; // Extracting the value dynamically
-        return { oldKey, newKey };
-      });    
+      const newKeyValue = Object.values(updatedFormData).toString();     
     
       const authHeader = `Bearer ${token}`;
       const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           Authorization: authHeader,
           'Content-Type': 'application/json',
         },
-        body: [JSON.stringify(poster)],
+        body: [JSON.stringify({oldKey: oldKeyValue, newKey: newKeyValue})],
       });
       if (response.ok) {
         const data = await response.json();
@@ -454,16 +436,16 @@ const handleInputChange = (e, formType) => {
 
   try {
     const formData = new FormData(e.target);
-    const updatedDataTypes = {};
+    
     schema.forEach((field) => {
-      updatedDataTypes[field.name] = formData.get(field.name);
+      newDataTypes[field.name] = formData.get(field.name);
     });
-    setNewDataTypes(updatedDataTypes);
+    setNewDataTypes(newDataTypes);
    
     const updatedSchema = schema.map((field) => {
       return {
         name: field.name,
-        type: updatedDataTypes[field.name] || field.type
+        type: newDataTypes[field.name] || field.type
       };
     });
     const reqBody = { schema: [ ...updatedSchema ]}
@@ -665,25 +647,13 @@ const handleInputChange = (e, formType) => {
       <div key={schema[0].name}>
         <label>
           Current column name:
-          {schema[0].type === 'boolean' ? (
-            <select
-              name={schema[0].key}
-              value={originalFormData[schema[0].name] || ''}
-              onChange={(e) => handleInputChange(e, 'original')}
-              required
-            >
-              <option value="false">false</option>
-              <option value="true">true</option>
-            </select>
-          ) : (
             <input
-              type={schema[0].type}
               name={schema[0].name}
               value={originalFormData[schema[0].name] || ''}
               onChange={(e) => handleInputChange(e, 'original')}
               placeholder={`Enter current column name`}
             />
-          )}
+          
         </label>
       </div>
     )}    
@@ -691,31 +661,20 @@ const handleInputChange = (e, formType) => {
 )}
 
 {action === 'edit-column' && schema && (
+  
   <form onSubmit={editColumnEntry}>
     {/* Original values form */}
     {schema.length > 0 && (
-      <div key={schema[1].name}>
+      <div key={schema[0].name}>
         <label>
           Updated column name:
-          {schema[1].type === 'boolean' ? (
-            <select
-              name={schema[1].key}
-              value={updatedFormData[schema[1].name] || ''}
-              onChange={(e) => handleInputChange(e, 'updated')}
-              required
-            >
-              <option value="false">false</option>
-              <option value="true">true</option>
-            </select>
-          ) : (
             <input
-              type={schema[1].type}
-              name={schema[1].name}
-              value={updatedFormData[schema[1].name] || ''}
+              name={schema[0].name}
+              value={updatedFormData[schema[0].name] || ''}
               onChange={(e) => handleInputChange(e, 'updated')}
               placeholder={`Enter updated column name`}
             />
-          )}
+          
         </label>
       </div>
     )}    
@@ -740,7 +699,9 @@ const handleInputChange = (e, formType) => {
     ))}
     <button type="submit">Submit</button>
   </form>
+ 
 )}     
+
   {tableContents && (
   <div>
     <h3 className='instance-names'>Table Contents for {selectedInstance}</h3>
