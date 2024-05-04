@@ -24,6 +24,7 @@ export const InstanceNames = () => {
   const [updatedFormData, setUpdatedFormData] = useState({});
    const [carrier, setCarrier] = useState({});
    const [id, setId] = useState('');
+   const [newDataTypes, setNewDataTypes] = useState({});
 
   const fetchSchema = useCallback(async () => {
     const token = localStorage.getItem('token');
@@ -404,6 +405,19 @@ const handleInputChange = (e, formType) => {
     }
   };
 
+  const handleSchemaEditEntry = () => {
+    setAction('edit-schema');
+    if (!selectedInstance) {
+      alert('Please select an instance before adding an entry.');
+      return;
+    }
+    // Fetch schema if not already fetched
+    if (!schema) {
+      handleInstanceSelect(selectedInstance);
+      addNewInstance(selectedInstance);
+    }
+  };
+
   const deleteTable = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
@@ -434,6 +448,113 @@ const handleInputChange = (e, formType) => {
     }
   }
 
+
+  const editDataType = async (e) => {
+    e.preventDefault();
+
+  try {
+    const formData = new FormData(e.target);
+    const updatedDataTypes = {};
+    schema.forEach((field) => {
+      updatedDataTypes[field.name] = formData.get(field.name);
+    });
+    setNewDataTypes(updatedDataTypes);
+    console.log(updatedDataTypes)
+    const updatedSchema = schema.map((field) => {
+      return {
+        name: field.name,
+        type: updatedDataTypes[field.name] || field.type
+      };
+    });
+    const reqBody = { schema: [ ...updatedSchema ]}
+
+    const authHeader = `Bearer ${token}`;
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}/schema`, {
+        method: 'PUT',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+        body: [JSON.stringify(reqBody)],
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Entry added successfully');
+        // Clear form inputs after successful submission
+        setToken(data.token);
+        setSchema('');
+        setUpdatedFormData({}); // Clear updatedFormData
+        setOriginalFormData({}); // Clear originalFormData
+        // Update file list
+        fetchFileList();
+      } else {
+        console.error('Failed to create table');
+      }
+    } catch (error) {
+      console.error('Error creating table:', error);
+    }
+
+    
+  };
+
+
+
+
+
+  const updateDataTypes = async (e) => {
+    e.preventDefault();
+    
+    const token = localStorage.getItem('token');   
+    try {
+      // Fetch schema only when needed
+      await fetchSchema();
+      console.log(Object.values(originalFormData).toString())
+      const oldKeyValue = Object.values(originalFormData).toString();
+      const newKeyValue = Object.values(updatedFormData).toString();
+      let requestBody = {
+        schema: [ ...carrier ],
+        keys: [{ ...updatedFormData }]
+      };
+  
+      let poster = {
+        schema: [...requestBody.schema],
+        keys: [...oldKeyValue, ...newKeyValue]
+      };
+  
+      poster.keys = requestBody.keys.map(()=> {
+        let oldKey = oldKeyValue; // Extracting the key dynamically
+        let newKey = newKeyValue; // Extracting the value dynamically
+        return { oldKey, newKey };
+      });    
+    
+      const authHeader = `Bearer ${token}`;
+      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}/schema`, {
+        method: 'PUT',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+        body: [JSON.stringify(reqBody)],
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Entry added successfully');
+        // Clear form inputs after successful submission
+        setToken(data.token);
+        setSchema('');
+        setUpdatedFormData({}); // Clear updatedFormData
+        setOriginalFormData({}); // Clear originalFormData
+        // Update file list
+        fetchFileList();
+      } else {
+        console.error('Failed to create table');
+      }
+    } catch (error) {
+      console.error('Error creating table:', error);
+    }
+  }
+
+  
 
   return (
     <>
@@ -509,7 +630,7 @@ const handleInputChange = (e, formType) => {
       </button>
       <button onClick={deleteTable} type="submit">Delete Table</button>
       <button onClick={handleColumnEditEntry}>Edit Entry Column</button>
-      <button>Edit Column Data Type</button>
+      <button onClick={handleSchemaEditEntry}>Edit Column Data Type</button>
       {action === 'add' && schema && (
         <form onSubmit={addTableEntry}>
           {schema.map((field) => (
@@ -659,7 +780,25 @@ const handleInputChange = (e, formType) => {
     <button type='submit'>Submit</button>
   </form>
 )}
-      
+{action === 'edit-schema' && schema && (
+  <form onSubmit={editDataType}>
+    {schema.map((field) => (
+      <div key={field.name}>
+        <label>
+          {field.name} (Updated)
+           
+            <select name={field.name}>
+              <option value="string">string</option>
+              <option value="number">number</option>
+              <option value="boolean">boolean</option>
+            </select>
+          
+        </label>
+      </div>
+    ))}
+    <button type="submit">Submit</button>
+  </form>
+)}     
   {tableContents && (
   <div>
     <h3 className='instance-names'>Table Contents for {selectedInstance}</h3>
