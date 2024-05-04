@@ -459,7 +459,7 @@ const handleInputChange = (e, formType) => {
       updatedDataTypes[field.name] = formData.get(field.name);
     });
     setNewDataTypes(updatedDataTypes);
-    console.log(updatedDataTypes)
+   
     const updatedSchema = schema.map((field) => {
       return {
         name: field.name,
@@ -467,7 +467,7 @@ const handleInputChange = (e, formType) => {
       };
     });
     const reqBody = { schema: [ ...updatedSchema ]}
-
+    console.log(reqBody)
     const authHeader = `Bearer ${token}`;
       const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}/schema`, {
         method: 'PUT',
@@ -496,64 +496,6 @@ const handleInputChange = (e, formType) => {
 
     
   };
-
-
-
-
-
-  const updateDataTypes = async (e) => {
-    e.preventDefault();
-    
-    const token = localStorage.getItem('token');   
-    try {
-      // Fetch schema only when needed
-      await fetchSchema();
-      console.log(Object.values(originalFormData).toString())
-      const oldKeyValue = Object.values(originalFormData).toString();
-      const newKeyValue = Object.values(updatedFormData).toString();
-      let requestBody = {
-        schema: [ ...carrier ],
-        keys: [{ ...updatedFormData }]
-      };
-  
-      let poster = {
-        schema: [...requestBody.schema],
-        keys: [...oldKeyValue, ...newKeyValue]
-      };
-  
-      poster.keys = requestBody.keys.map(()=> {
-        let oldKey = oldKeyValue; // Extracting the key dynamically
-        let newKey = newKeyValue; // Extracting the value dynamically
-        return { oldKey, newKey };
-      });    
-    
-      const authHeader = `Bearer ${token}`;
-      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}/${selectedInstance}/schema`, {
-        method: 'PUT',
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
-        },
-        body: [JSON.stringify(reqBody)],
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Entry added successfully');
-        // Clear form inputs after successful submission
-        setToken(data.token);
-        setSchema('');
-        setUpdatedFormData({}); // Clear updatedFormData
-        setOriginalFormData({}); // Clear originalFormData
-        // Update file list
-        fetchFileList();
-      } else {
-        console.error('Failed to create table');
-      }
-    } catch (error) {
-      console.error('Error creating table:', error);
-    }
-  }
-
   
 
   return (
