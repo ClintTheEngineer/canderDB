@@ -192,8 +192,10 @@ module.exports = {
 PATHS: 
 
 GET: '/instances/user@email.com/instance-name/filename.db'
+GET: '/instances/user@email.com/instance-name/filename.db/:id'
 POST: '/instances/user@email.com/instance-name/filename.db'
 PUT: '/instances/user@email.com/instance-name/filename.db'
+PUT: '/instances/user@email.com/instance-name/filename.db/:id'
 PATCH: '/instances/user@email.com/instance-name/filename.db/schema'
 DELETE(entire instance): '/instances/user@email.com/instance-name'
 DELETE(table):'/instances/user@email.com/instance-name/filename.db'
