@@ -9,10 +9,10 @@ import { Constants } from '../pages/Constants';
 export const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    const [username, setUsername] = useState(''); // eslint-disable-line no-unused-vars
+    const [errorMessage, setErrorMessage] = useState(''); 
     const [token, setToken] = useState('');
     const navigate = useNavigate();
-
 
 
     Login.propTypes = {
@@ -29,7 +29,7 @@ export const Login = () => {
     const HandleLogin = async () => {
       try {
         const authHeader = `Bearer ${token}`;
-        const response = await fetch(`${Constants.SERVER_URL}/login`, {
+        const response = await fetch(`${Constants.SERVER_URL}login`, {
           method: 'POST',
           headers: {
             'Authorization': authHeader,
@@ -41,10 +41,13 @@ export const Login = () => {
         const data = await response.json();
         if (response.status === 200) {
           const token = data.token;
+          const username = data.username;
           setToken(token);
           setEmail(email);
+          setUsername(username);
           localStorage.setItem('token', token);
           localStorage.setItem('email', email);
+          localStorage.setItem('username', username);
           navigate('/instances');
         } else if(response.status === 400){
           setErrorMessage('Login failed')

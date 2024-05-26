@@ -5,33 +5,26 @@ import { Constants } from "./Constants";
 import { Navbar } from "../components/Navbar";
 
 export const Instances = () => {
-  // State to manage the list of instances
   const [instances, setInstances] = useState([]);
-  // State to manage the visibility of the input field
   const [showInput, setShowInput] = useState(false);
-  // State to store the value of the input field
   const [instanceName, setInstanceName] = useState('');
-  // State to store the index of the instance being edited
   const [editingIndex, setEditingIndex] = useState(null);
-  // State to store the value of the edited instance name
   const [editedInstanceName, setEditedInstanceName] = useState('');
-  // State to manage the visibility of the delete confirmation dialog
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  // State to store the index of the instance being deleted
   const [deletingIndex, setDeletingIndex] = useState(null);
-  // State to store the value entered in the delete confirmation input field
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
-  const userEmail = localStorage.getItem('email');
   const token = localStorage.getItem('token');
-
+  const username = localStorage.getItem('username');
+ 
   // Function to fetch instance list from server
   const fetchInstances = useCallback(() => {
-    const token = localStorage.getItem('token'); // Assuming the token is stored in local storage
+    const token = localStorage.getItem('token'); 
+    
     
     // Check if token is present
     if (token) {
-      fetch(`${Constants.SERVER_URL}/instances/${userEmail}`, {
+      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`, // Include the token in the authorization header
@@ -44,7 +37,7 @@ export const Instances = () => {
     } else {
       console.error('Token not found. Unable to fetch instances.');
     }
-  }, [userEmail, setInstances]);
+  }, [username, setInstances]);
 
   useEffect(() => {
     fetchInstances();
@@ -53,7 +46,7 @@ export const Instances = () => {
   // Function to handle adding a new instance
   const addInstance = () => {
     if (instanceName.trim() !== '') {
-      fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}`, {
+      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceName}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -83,7 +76,7 @@ export const Instances = () => {
   const saveEditedInstance = (index) => {
     if (editedInstanceName.trim() !== '') {
       const authHeader = `Bearer ${token}`;
-      fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instances[index].name}`, {
+      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instances[index].name}`, {
         method: 'PUT',
         headers: {
           Authorization: authHeader,
@@ -115,7 +108,7 @@ export const Instances = () => {
 
     if (confirmedName === instanceToDelete.name) {
       const authHeader = `Bearer ${token}`;
-      fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceToDelete.name}`, {
+      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceToDelete.name}`, {
         method: 'DELETE',
         headers: {
           Authorization: authHeader,
