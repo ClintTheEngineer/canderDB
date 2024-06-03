@@ -24,7 +24,7 @@ export const Instances = () => {
     
     // Check if token is present
     if (token) {
-      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances`, {
+      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`, // Include the token in the authorization header
@@ -46,7 +46,7 @@ export const Instances = () => {
   // Function to handle adding a new instance
   const addInstance = () => {
     if (instanceName.trim() !== '') {
-      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceName}`, {
+      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instanceName}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -76,7 +76,7 @@ export const Instances = () => {
   const saveEditedInstance = (index) => {
     if (editedInstanceName.trim() !== '') {
       const authHeader = `Bearer ${token}`;
-      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instances[index].name}`, {
+      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instances[index].name}`, {
         method: 'PUT',
         headers: {
           Authorization: authHeader,
@@ -108,7 +108,7 @@ export const Instances = () => {
 
     if (confirmedName === instanceToDelete.name) {
       const authHeader = `Bearer ${token}`;
-      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceToDelete.name}`, {
+      fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instanceToDelete.name}`, {
         method: 'DELETE',
         headers: {
           Authorization: authHeader,

@@ -21,6 +21,30 @@ export const AdminInstanceNames = () => {
   const [updatedFormData, setUpdatedFormData] = useState({});
    //const [carrier, setCarrier] = useState({});
 
+
+   const fetchSchema = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`https://${Constants.SERVER_URL.hostname}/schema/api/instances/${instanceName}/${selectedInstance}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+       const data = await response.json();
+       setSchema(data);
+      } else {
+        console.error('Failed to fetch file list');
+      }
+    } catch (error) {
+      console.error('Error fetching file list:', error);
+    }
+  }, [instanceName, selectedInstance]);
+
+  useEffect(() => {
+    fetchSchema();
+  }, [fetchSchema]);
+
  
 
    const fetchFileList = useCallback(async () => {
@@ -61,7 +85,7 @@ export const AdminInstanceNames = () => {
     };
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`${Constants.SERVER_URL}/instances/canderdb-admin/${tableName}.db`, {
+      const response = await fetch(`${Constants.SERVER_URL}/api/instances/canderdb-admin/${tableName}.db`, {
         method: 'POST',
         headers: {
           Authorization: authHeader,
@@ -263,6 +287,45 @@ const handleInputChange = (e, formType) => {
       console.error('Error creating table:', error);
     }
   };
+
+
+
+  const editColumnEntry = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');   
+    try {
+      // Fetch schema only when needed
+      await fetchSchema();
+      const oldKeyValue = Object.values(originalFormData).toString();
+      const newKeyValue = Object.values(updatedFormData).toString();     
+    
+      const authHeader = `Bearer ${token}`;
+      const response = await fetch(`https://${Constants.SERVER_URL.hostname}/canderdb-admin/api/instances/${instanceName}/${selectedInstance}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: authHeader,
+          'Content-Type': 'application/json',
+        },
+        body: [JSON.stringify({oldKey: oldKeyValue, newKey: newKeyValue})],
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Entry added successfully');
+        // Clear form inputs after successful submission
+        setToken(data.token);
+        setSchema('');
+        setUpdatedFormData({}); // Clear updatedFormData
+        setOriginalFormData({}); // Clear originalFormData
+        // Update file list
+        fetchFileList();
+      } else {
+        console.error('Failed to create table');
+      }
+    } catch (error) {
+      console.error('Error creating table:', error);
+    }
+  };
+  
 
 
  

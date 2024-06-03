@@ -11,7 +11,7 @@ export const Documentation = () => {
       <div className="documentation-section">
         <h2 className="section-title">Introduction</h2>
         <p>
-          Welcome to the official documentation for CanderDB - a NoSQL database solution.
+          Welcome to the official documentation for CanderDB: a file-based NoSQL database with a schema enforcement mechanism.
           CanderDB provides a flexible and scalable data storage solution for your applications. Please be advised that CanderDB is currently in early beta and should be used for testing purposes only. CanderDB is NOT currently suitable for production.
         </p>
       </div>
@@ -33,55 +33,133 @@ const https = require('https');
 const dbConfig = {
     hostname: process.env.HOST_NAME,
     headers: {
-        'Authorization': process.env.ACCESS_TOKEN,
+        'Authorization': \`\${process.env.ACCESS_TOKEN}\`,
         'Content-Type': 'application/json'
     }
 };
 
-const connect = (method, requestBody, res) => {
-    const requestOptions = {
-        ...dbConfig,
-        path: '/instances/user@email.com/instanceName/fileName.db',
-        method: method
+// Utility function to make HTTP requests
+const makeRequest = (method, path, data) => {
+    return new Promise((resolve, reject) => {
+        const options = {
+            hostname: dbConfig.hostname,
+            path,
+            method,
+            headers: dbConfig.headers
+        };
+
+        const req = https.request(options, (res) => {
+            let body = '';
+            res.on('data', (chunk) => body += chunk);
+            res.on('end', () => {
+                if (res.statusCode >= 200 && res.statusCode < 300) {
+                    resolve(JSON.parse(body));
+                } else {
+                    reject(JSON.parse(body));
+                }
+            });
+        });
+
+        req.on('error', (e) => reject(e));
+        if (data) {
+            req.write(JSON.stringify(data));
+        }
+        req.end();
+    });
+};
+
+function fetchTableContent(instanceName, tableName) {
+    const options = {
+        hostname: dbConfig.hostname,
+        path: \`/instances/\${instanceName}/\${tableName}\`,
+        method: 'GET',
+        headers: dbConfig.headers
     };
 
-    const reqToRemoteServer = https.request(requestOptions, (response) => {
-        let data = '';
-        response.on('data', (chunk) => {
-            data += chunk;
-        });
-        response.on('end', () => {
-            console.log('Response Data:', data);
-            if (response.statusCode >= 400) {
-                console.error('Error:', data);
-                res.status(response.statusCode).send(\`Error from remote server: \${data}\`);
-            } else {
-                try {
-                    const jsonData = JSON.parse(data);
-                    res.json(jsonData);
-                } catch (error) {
-                    console.error('Error parsing JSON:', error);
-                    res.status(500).send(\`Error parsing JSON from the remote server\`);
+    return new Promise((resolve, reject) => {
+        const req = https.request(options, res => {
+            let data = '';
+
+            res.on('data', chunk => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    resolve(JSON.parse(data));
+                } else {
+                    reject(new Error(\`Failed to fetch table content: \${data}\`));
                 }
-            }
+            });
         });
-    });
 
-    reqToRemoteServer.on('error', (error) => {
-        console.error('Error:', error);
-        res.status(500).send('Error communicating with the remote server');
-    });
+        req.on('error', error => {
+            reject(error);
+        });
 
-    if (requestBody) {
-        reqToRemoteServer.write(JSON.stringify(requestBody));
+        req.end();
+    });
+}
+
+function addUser(instanceName, tableName, newUser) {
+    const options = {
+        hostname: dbConfig.hostname,
+        path: \`/instances/\${instanceName}/\${tableName}\`,
+        method: 'POST',
+        headers: dbConfig.headers
+    };
+
+    return new Promise((resolve, reject) => {
+        const req = https.request(options, res => {
+            let data = '';
+
+            res.on('data', chunk => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    resolve(JSON.parse(data));
+                } else {
+                    reject(new Error(\`Failed to add user: \${data}\`));
+                }
+            });
+        });
+
+        req.on('error', error => {
+            reject(error);
+        });
+
+        req.write(JSON.stringify(newUser));
+        req.end();
+    });
+}
+
+// Function to check if email exists
+const checkEmailExists = async (email) => {
+    try {
+        const users = await makeRequest('GET', '/instances/links/ice_users.db');
+        return users.some(user => user.email === email);
+    } catch (error) {
+        console.error('Error checking if email exists:', error);
+        throw error;
     }
+};
 
-    reqToRemoteServer.end();
-};
+
+async function fetchUserByEmail(instanceName, tableName, email) {
+    const users = await fetchTableContent(instanceName, tableName);
+    return users.find(user => user.email === email);
+}
+
 module.exports = {
-    dbConfig,
-    connect
+    fetchTableContent,
+    addUser,
+    fetchUserByEmail,
+    makeRequest, 
+    checkEmailExists
 };
+
     
 `}
           </code>
@@ -202,7 +280,7 @@ DELETE(table):'/instances/user@email.com/instance-name/filename.db'
 DELETE(row): '/instances/user@email.com/instance-name/filename.db'(with request body that includes user entry)
 
 *Bearer tokens are required to send requests to the server. 
-HOST_NAME = cander-db.com
+HOST_NAME = yourusername.cander-db.com
 
             
             `}

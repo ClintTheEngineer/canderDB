@@ -27,7 +27,7 @@ export const InstanceNames = () => {
   const fetchSchema = useCallback(async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/schema/instances/${instanceName}/${selectedInstance}`, {
+      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/schema/api/instances/${instanceName}/${selectedInstance}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -53,7 +53,7 @@ export const InstanceNames = () => {
   const fetchFileList = useCallback(async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceName}`, {
+      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instanceName}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -86,7 +86,7 @@ export const InstanceNames = () => {
     };
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceName}/${tableName}.db`, {
+      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instanceName}/${tableName}.db`, {
         method: 'POST',
         headers: {
           Authorization: authHeader,
@@ -118,7 +118,7 @@ export const InstanceNames = () => {
     setSchema('')
     setSelectedInstance(instance);
     try {
-      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceName}/${instance} `, {
+      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instanceName}/${instance} `, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -142,7 +142,7 @@ export const InstanceNames = () => {
     const token = localStorage.getItem('token');
     setSelectedInstance(instance);
     try {
-      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/schema/instances/${instanceName}/${instance}`, {
+      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/schema/api/instances/${instanceName}/${instance}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -201,7 +201,7 @@ const handleInputChange = (e, formType) => {
         }
       };
   
-      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceName}/${selectedInstance}/${idValue}`, requestOptions);
+      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instanceName}/${selectedInstance}/${idValue}`, requestOptions);
   
       if (!response.ok) {
         throw new Error('Failed to delete entry');
@@ -229,7 +229,7 @@ const handleInputChange = (e, formType) => {
     const token = localStorage.getItem('token');
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceName}/${selectedInstance}`, {
+      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instanceName}/${selectedInstance}`, {
         method: 'POST',
         headers: {
           Authorization: authHeader,
@@ -267,7 +267,7 @@ const handleInputChange = (e, formType) => {
   
     try {
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceName}/${selectedInstance}/${idValue}`, {
+      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instanceName}/${selectedInstance}/${idValue}`, {
         method: 'PUT',
         headers: {
           Authorization: authHeader,
@@ -305,7 +305,7 @@ const handleInputChange = (e, formType) => {
       const newKeyValue = Object.values(updatedFormData).toString();     
     
       const authHeader = `Bearer ${token}`;
-      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceName}/${selectedInstance}`, {
+      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instanceName}/${selectedInstance}`, {
         method: 'PATCH',
         headers: {
           Authorization: authHeader,
@@ -414,7 +414,7 @@ const handleInputChange = (e, formType) => {
         }
       };
   
-      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceName}/${selectedInstance}`, requestOptions);
+      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instanceName}/${selectedInstance}`, requestOptions);
   
       if (!response.ok) {
         throw new Error('Failed to delete entry');
@@ -451,7 +451,7 @@ const handleInputChange = (e, formType) => {
     const reqBody = { schema: [ ...updatedSchema ]}
     console.log(reqBody)
     const authHeader = `Bearer ${token}`;
-      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/instances/${instanceName}/${selectedInstance}/schema`, {
+      const response = await fetch(`https://${username}.${Constants.SERVER_URL.hostname}/api/instances/${instanceName}/${selectedInstance}/schema`, {
         method: 'PUT',
         headers: {
           Authorization: authHeader,

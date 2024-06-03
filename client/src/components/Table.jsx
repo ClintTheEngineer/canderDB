@@ -16,7 +16,7 @@ token;
   const fetchFileList = useCallback(async () => {
     const token = localStorage.getItem('token')
     try {
-      const response = await fetch(`${Constants.SERVER_URL}/instances/${userEmail}/${instanceName}`,{
+      const response = await fetch(`${Constants.SERVER_URL}/api/instances/${userEmail}/${instanceName}`,{
         headers: {
           'Authorization': `Bearer ${token}`
         }
